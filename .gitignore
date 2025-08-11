@@ -1,1 +1,3 @@
 /dotnet_rag/bin/
+/dotnet_rag/obj/
+.idea/
