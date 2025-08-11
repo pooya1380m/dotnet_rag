@@ -16,7 +16,8 @@ class Program
 
         // Configure AI services
         builder.AddBertOnnxEmbeddingGenerator(embeddModelPath, embedVocab);
-        builder.AddOpenAIChatCompletion("qwen2.5-coder-0.5b-instruct-generic-gpu", new Uri("http://localhost:55797/v1"), apiKey: "", serviceId: "qwen2.5-0.5b");
+        builder.AddOpenAIChatCompletion("qwen2.5-coder-0.5b-instruct-generic-gpu", new Uri("http://localhost:55797/v1"),
+            apiKey: "", serviceId: "qwen2.5-0.5b");
 
         // Build kernel
         var kernel = builder.Build();
@@ -33,19 +34,22 @@ class Program
         await vectorStoreService.InitializeAsync();
 
         var documentIngestionService = new DocumentIngestionService(embeddingService, vectorStoreService);
-        var ragQueryService = new RagQueryService(embeddingService, chatService, vectorStoreService);
+        var ragQueryService = new RagQueryService(chatService);
 
         // Ingest document
         var filePath = "./foundry-local-architecture.md";
         var fileID = "3";
         await documentIngestionService.IngestDocumentAsync(filePath, fileID);
 
-        // Execute RAG query
-        var question = "What's Foundry Local?";
-        var answer = await ragQueryService.QueryAsync(question);
+        while (true)
+        {
+            // Execute RAG query
+            var question = Console.ReadLine();
+            var answer = await ragQueryService.QueryAsync(question);
 
-        // Display result
-        Console.WriteLine($"Question: {question}");
-        Console.WriteLine($"Answer: {answer}");
+            // Display result
+            Console.WriteLine($"Question: {question}");
+            Console.WriteLine($"Answer: {answer}");
+        }
     }
 }
